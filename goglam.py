@@ -43,7 +43,9 @@ print  (13/float(100))*totalUsers
 if( (15/float(100))*totalUsers >= glamUsers ):
     query4 = "select distinct(userid) from gohack as g where ST_Contains(ST_AsText('" + geopol + "'), g.location) and g.service <> 'glam';"
     curs.execute(query4)
-    target_users = curs.fetchall()
-    print np.array([target_users[i] for i in len(target_users)])
+    row = curs.fetchone()
+    while row is not None:
+            print(row[0])
+            row = curs.fetchone()
 else:
     print "Number of Go-glam users is less than 5% in hotspot"
