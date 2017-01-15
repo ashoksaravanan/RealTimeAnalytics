@@ -1,5 +1,6 @@
 # To find hot-spots based on location data
 
+import sys
 import psycopg2  
 import numpy as np
 import scipy.cluster.hierarchy as hcluster
@@ -26,9 +27,6 @@ def distance_matrix(loc_array):
             dis_matrix[i][j] = distance(loc_array[i],loc_array[j])
     return dis_matrix
 
-#def find_hotspot(cluster_array):
-    # finds top cluster
-
 
 # main function
 
@@ -44,7 +42,7 @@ conn_string = "host='localhost' dbname='gojek' user='postgres' password='karthi'
 conn = psycopg2.connect(conn_string)
 curs = conn.cursor()
 
-curs.execute("select ST_X(location),ST_Y(location) from gohack where service='ride' and isbooked='t';")
+curs.execute("select ST_X(location),ST_Y(location) from gohack where service='"+sys.argv[1]+"' and isbooked='t';")
 locArray = curs.fetchall()
 
 #conn.close()
@@ -54,16 +52,28 @@ locArray = curs.fetchall()
 #print df
 
 # clustering
-#thresh = 0.05
-thresh = 1.5
-clusters = hcluster.fclusterdata(locArray, thresh, criterion="distance")
+thresh = 0.01
+#thresh = 1.5
+clusters = np.array(hcluster.fclusterdata(locArray, thresh, criterion="distance"), dtype=int)
 #clusters = hcluster.fclusterdata(distance_matrix(locArray), thresh, criterion="distance")
 #df['cluster_id'] = clusters
 
 #print clusters
 #print df
-cluster_ids = clusters.astype(np.int64)
-np.savetxt('clusters.txt', cluster_ids)
+#cluster_ids = clusters.astype(np.int64)
+#np.savetxt('clusters.txt', clusters)
+
+hotspot = np.bincount(clusters).argmax()
+print hotspot
+
+indices = [i for i, j in enumerate(clusters) if j == hotspot]
+#print indices
+
+print len(clusters)
+print len(indices)
+
+hotspot_points = [locArray[i] for i in indices]
+print len(hotspot_points)
 
 # plotting
 #x = np.arange(10)
