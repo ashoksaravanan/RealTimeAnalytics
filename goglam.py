@@ -30,18 +30,20 @@ print totalUsers
 
 # Query 3
 
-query3 = "select count(*) from gohack as g where ST_Contains(ST_AsText('"+geopol+"'), g.location);"
+query3 = "select count(*) from gohack as g where ST_Contains(ST_AsText('" + geopol+ "'), g.location) and st_area('" + geopol+ "') < 0.05 and g.service='glam'  GROUP BY service;"
 curs.execute(query3)
 glamUsers = curs.fetchall()
 glamUsers = int(glamUsers[0][0])
 print glamUsers
 
 # Query 4
+print 13/float(100)
+print  (13/float(100))*totalUsers
 
-if( (5/100)*totalUsers >= glamUsers ):
+if( (15/float(100))*totalUsers >= glamUsers ):
     query4 = "select distinct(userid) from gohack as g where ST_Contains(ST_AsText('" + geopol + "'), g.location) and g.service <> 'glam';"
     curs.execute(query4)
     target_users = curs.fetchall()
-    print target_users
+    print np.array([target_users[i] for i in len(target_users)])
 else:
     print "Number of Go-glam users is less than 5% in hotspot"

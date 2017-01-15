@@ -5,6 +5,7 @@ import psycopg2
 import numpy as np
 import scipy.cluster.hierarchy as hcluster
 from math import cos, asin, sqrt
+from geopy.geocoders import Nominatim
 
 # functions
 
@@ -59,7 +60,10 @@ hotspot_points = np.array([locArray[i] for i in indices])
 print "Current demand in hotspot: ", len(hotspot_points)
 
 centeroid = centeroidnp(hotspot_points)
-print "Centeroid of hotspot: ", centeroid
+#print "Centeroid of hotspot: ", centeroid
+geolocator = Nominatim()
+location = geolocator.reverse(centeroid)
+print("Current centroid location:"+location.address)
 
 edges = poly_edges(hotspot_points)
 print "Edges of hotspot: ", edges
